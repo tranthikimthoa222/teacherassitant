@@ -1,0 +1,346 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer theme {
+  :root {
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    /* Teal-based color system */
+    --color-primary: #0D9488;
+    --color-primary-light: #2DD4BF;
+    --color-primary-dark: #115E59;
+    --color-secondary: #06B6D4;
+    --color-accent: #14B8A6;
+
+    --color-surface: #ffffff;
+    --color-surface-translucent: rgba(255, 255, 255, 0.8);
+
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-glass: 0 8px 32px 0 rgba(13, 148, 136, 0.07);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased selection:bg-teal-100 selection:text-teal-700;
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body,
+  body.dark-body {
+    @apply bg-gray-900 text-gray-200;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    @apply tracking-tight font-bold text-slate-900;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+  }
+
+  .glass-button {
+    @apply bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-cyan-600;
+  }
+
+  .card-hover {
+    @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out;
+  }
+}
+
+/* ================ DARK MODE ================ */
+.dark {
+  color-scheme: dark;
+}
+
+/* Main containers */
+.dark .app-wrapper {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+}
+
+/* Header */
+.dark header {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+.dark header span,
+.dark header button {
+  color: #cbd5e1;
+}
+
+.dark header button:hover {
+  background-color: #334155;
+}
+
+.dark header .bg-gray-100 {
+  background-color: #334155 !important;
+}
+
+/* Sidebar */
+.dark aside,
+.dark .sidebar-container {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  border-color: #334155 !important;
+}
+
+.dark aside input,
+.dark aside .bg-slate-50\/50,
+.dark aside .bg-slate-100 {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark aside button {
+  color: #cbd5e1 !important;
+}
+
+.dark aside .text-slate-900,
+.dark aside .text-slate-800,
+.dark aside .text-gray-900,
+.dark aside .text-teal-900 {
+  color: #f1f5f9 !important;
+}
+
+.dark aside .hover\:bg-teal-50:hover,
+.dark aside .hover\:bg-slate-100:hover {
+  background-color: #334155 !important;
+}
+
+.dark aside .bg-teal-50\/80 {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+
+/* Chat area */
+.dark .chat-bg,
+.dark .bg-slate-50\/80 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-white {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #1e293b !important;
+}
+
+/* Message bubbles */
+.dark .group {
+  border-color: #334155 !important;
+}
+
+.dark .prose {
+  color: #cbd5e1 !important;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose strong {
+  color: #f1f5f9 !important;
+}
+
+/* Tables in dark mode */
+.dark .prose table {
+  border-color: #475569 !important;
+}
+
+.dark .prose thead {
+  background-color: #334155 !important;
+}
+
+.dark .prose tbody {
+  background-color: #1e293b !important;
+}
+
+.dark .prose td,
+.dark .prose th {
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+.dark .prose tr:hover {
+  background-color: rgba(20, 184, 166, 0.1) !important;
+}
+
+/* Blockquote */
+.dark .prose blockquote {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+/* Links */
+.dark .prose a {
+  color: #2dd4bf !important;
+}
+
+/* Modals */
+.dark .modal-content,
+.dark [class*="bg-white"] {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+.dark [class*="border-gray"] {
+  border-color: #475569 !important;
+}
+
+.dark [class*="text-gray-900"],
+.dark [class*="text-slate-900"],
+.dark [class*="text-slate-800"] {
+  color: #f1f5f9 !important;
+}
+
+.dark [class*="text-gray-600"],
+.dark [class*="text-slate-600"],
+.dark [class*="text-gray-500"],
+.dark [class*="text-slate-500"] {
+  color: #94a3b8 !important;
+}
+
+.dark [class*="bg-gray-50"],
+.dark [class*="bg-slate-100"] {
+  background-color: #334155 !important;
+}
+
+/* Input fields */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Scrollbar dark */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.5);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.7);
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(100, 116, 139, 0.5) transparent;
+}
+
+/* Welcome screen */
+.dark .welcome-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+}
+
+/* Export menu */
+.dark [class*="bg-white"][class*="border"][class*="shadow"] {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+}
+
+/* Buttons in dark */
+.dark .bg-teal-50 {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: #334155 !important;
+}
+
+/* ================ END DARK MODE ================ */
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.4);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.6);
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+/* KaTeX display math */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  margin: 1rem 0 !important;
+}
+
+.katex-display>.katex {
+  white-space: normal;
+}
+
+/* Inline KaTeX */
+.katex {
+  font-size: 1.05em;
+}
+
+/* Onboarding overlay */
+.onboarding-highlight {
+  position: relative;
+  z-index: 1001;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.5), 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+
+.onboarding-tooltip {
+  animation: tooltipBounce 0.4s ease-out;
+}
+
+@keyframes tooltipBounce {
+  0% {
+    transform: scale(0.8) translateY(10px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.03) translateY(-3px);
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
