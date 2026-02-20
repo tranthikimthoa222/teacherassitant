@@ -110,6 +110,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
             </div>
 
+            {/* Author Card */}
+            <div className="px-5 pt-3 pb-1">
+                <div className="bg-gradient-to-br from-cyan-50 via-teal-50 to-emerald-50 p-3 rounded-2xl border border-teal-100/60 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <img
+                            src="/avatar.jpg"
+                            alt="Tác giả"
+                            className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-semibold text-teal-500 uppercase tracking-wider mb-0.5">✨ Tác giả</p>
+                            <h4 className="font-bold text-slate-800 text-sm leading-tight truncate">Trần Thị Kim Thoa</h4>
+                            <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">🏫 Trường THPT Hoàng Diệu</p>
+                        </div>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-2 leading-relaxed pl-1">
+                        📍 Số 1 Mạc Đĩnh Chi, P. Phú Lợi, TP. Cần Thơ
+                    </p>
+                </div>
+            </div>
+
             {/* New Chat Button */}
             <div className="px-5 pt-5 pb-3">
                 <button
