@@ -8,6 +8,7 @@ import { DocumentManager } from './components/DocumentManager';
 import { PromptTemplatePanel } from './components/PromptTemplatePanel';
 import { DashboardModal } from './components/DashboardModal';
 import { OnboardingTour, shouldShowOnboarding } from './components/OnboardingTour';
+import SKKNEditorApp from './skkn/SKKNEditorApp';
 import { setGeminiApiKey, generateResponse, getGeminiApiKey, getAvailableModels, getSelectedModel, setSelectedModel } from './services/gemini';
 import { setSupabaseConfig, getTeacherProfile, saveTeacherProfile as saveProfileService } from './services/supabase';
 import { buildDocumentContext } from './services/documents';
@@ -102,6 +103,7 @@ function App() {
   const [aiLanguage, setAiLanguage] = useState(() => localStorage.getItem('ai_language') || 'vi');
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showSKKNEditor, setShowSKKNEditor] = useState(false);
 
   // Initialize dark mode on mount
   useEffect(() => {
@@ -652,6 +654,7 @@ function App() {
             onSearchChange={setSearchQuery}
             onShowBookmarks={() => setShowBookmarks(true)}
             onShowDashboard={() => setShowDashboard(true)}
+            onShowSKKNEditor={() => setShowSKKNEditor(true)}
             folderFilter={folderFilter}
             onFolderFilterChange={setFolderFilter}
             onMoveToFolder={handleMoveToFolder}
@@ -690,6 +693,10 @@ function App() {
                 setShowDashboard(true);
                 setSidebarOpen(false);
               }}
+              onShowSKKNEditor={() => {
+                setShowSKKNEditor(true);
+                setSidebarOpen(false);
+              }}
               folderFilter={folderFilter}
               onFolderFilterChange={setFolderFilter}
               onMoveToFolder={handleMoveToFolder}
@@ -700,18 +707,22 @@ function App() {
 
         <main className="flex-1 flex flex-col relative w-full h-full bg-white shadow-2xl z-0 overflow-hidden">
           <div className="flex-1 min-h-0 relative h-full">
-            <ChatArea
-              messages={messages}
-              isTyping={isTyping}
-              onSendMessage={handleSendMessage}
-              userName={profile?.name || ''}
-              onBookmark={handleBookmarkMessage}
-              onOpenTemplates={() => { setTemplateCategory(''); setShowTemplatePanel(true); }}
-              onOpenTemplatesWithCategory={(cat) => { setTemplateCategory(cat); setShowTemplatePanel(true); }}
-              pendingInput={pendingInput}
-              onPendingInputConsumed={() => setPendingInput('')}
-              onRegenerate={handleRegenerate}
-            />
+            {showSKKNEditor ? (
+              <SKKNEditorApp onClose={() => setShowSKKNEditor(false)} />
+            ) : (
+              <ChatArea
+                messages={messages}
+                isTyping={isTyping}
+                onSendMessage={handleSendMessage}
+                userName={profile?.name || ''}
+                onBookmark={handleBookmarkMessage}
+                onOpenTemplates={() => { setTemplateCategory(''); setShowTemplatePanel(true); }}
+                onOpenTemplatesWithCategory={(cat) => { setTemplateCategory(cat); setShowTemplatePanel(true); }}
+                pendingInput={pendingInput}
+                onPendingInputConsumed={() => setPendingInput('')}
+                onRegenerate={handleRegenerate}
+              />
+            )}
           </div>
         </main>
       </div>

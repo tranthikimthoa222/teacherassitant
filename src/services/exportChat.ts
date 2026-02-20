@@ -33,7 +33,7 @@ export const downloadMarkdown = (title: string, messages: ChatMessage[]) => {
 
 export const downloadWord = async (title: string, messages: ChatMessage[]) => {
     // Dynamic import to keep initial bundle small
-    const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, AlignmentType } = await import('docx');
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel, BorderStyle, AlignmentType, Table, TableRow, TableCell, WidthType, VerticalAlign } = await import('docx');
 
     const date = new Date().toLocaleDateString('vi-VN');
 
@@ -78,8 +78,19 @@ export const downloadWord = async (title: string, messages: ChatMessage[]) => {
 
         // Message content - split by lines
         const lines = msg.text.split('\n');
-        for (const line of lines) {
-            const trimmed = line.trim();
+        let i = 0;
+        while (i < lines.length) {
+            const trimmed = lines[i].trim();
+
+            // Check if this line starts a markdown table
+            const tableResult = parseMarkdownTable(lines, i);
+            if (tableResult) {
+                const table = createDocxTable(tableResult.headers, tableResult.rows, { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, BorderStyle, VerticalAlign, AlignmentType });
+                children.push(table);
+                children.push(new Paragraph({ text: '', spacing: { after: 100 } }));
+                i += tableResult.linesConsumed;
+                continue;
+            }
 
             if (trimmed.startsWith('### ')) {
                 children.push(new Paragraph({
@@ -126,6 +137,7 @@ export const downloadWord = async (title: string, messages: ChatMessage[]) => {
                     spacing: { after: 50 },
                 }));
             }
+            i++;
         }
 
         // Separator
@@ -152,6 +164,142 @@ export const downloadWord = async (title: string, messages: ChatMessage[]) => {
     a.click();
     URL.revokeObjectURL(url);
 };
+
+// ========== TABLE HELPERS ==========
+
+interface ParsedTable {
+    headers: string[];
+    rows: string[][];
+    linesConsumed: number;
+}
+
+/**
+ * Phân tích bảng markdown từ danh sách dòng.
+ * Bảng markdown có dạng:
+ *   | Header1 | Header2 |
+ *   | ------- | ------- |
+ *   | Data1   | Data2   |
+ */
+function parseMarkdownTable(lines: string[], startIndex: number): ParsedTable | null {
+    // Need at least 2 lines (header + separator)
+    if (startIndex + 1 >= lines.length) return null;
+
+    const headerLine = lines[startIndex].trim();
+    const separatorLine = lines[startIndex + 1].trim();
+
+    // Check if header line looks like a table row
+    if (!headerLine.includes('|')) return null;
+
+    // Check if second line is a separator (contains only |, -, :, spaces)
+    if (!(/^\|[\s\-:|]+\|$/.test(separatorLine) || /^[\s\-:|]+\|[\s\-:|]+$/.test(separatorLine))) return null;
+
+    // Parse header cells
+    const headers = parsePipeLine(headerLine);
+    if (headers.length === 0) return null;
+
+    // Parse data rows
+    const rows: string[][] = [];
+    let consumed = 2; // header + separator
+
+    for (let j = startIndex + 2; j < lines.length; j++) {
+        const rowLine = lines[j].trim();
+        if (!rowLine.includes('|') || /^\|[\s\-:|]+\|$/.test(rowLine)) break;
+        const cells = parsePipeLine(rowLine);
+        if (cells.length === 0) break;
+        rows.push(cells);
+        consumed++;
+    }
+
+    // Must have at least header to be a valid table
+    if (headers.length < 1) return null;
+
+    return { headers, rows, linesConsumed: consumed };
+}
+
+/** Parse a markdown pipe-delimited line into cell values */
+function parsePipeLine(line: string): string[] {
+    // Remove leading/trailing pipes and split
+    let trimmed = line.trim();
+    if (trimmed.startsWith('|')) trimmed = trimmed.substring(1);
+    if (trimmed.endsWith('|')) trimmed = trimmed.substring(0, trimmed.length - 1);
+    return trimmed.split('|').map(cell => cell.trim());
+}
+
+/** Create a docx Table object from parsed markdown table data */
+function createDocxTable(
+    headers: string[],
+    rows: string[][],
+    docx: any
+): any {
+    const { Table, TableRow, TableCell, Paragraph, TextRun, WidthType, BorderStyle, VerticalAlign, AlignmentType } = docx;
+
+    const tableBorder = {
+        style: BorderStyle.SINGLE,
+        size: 1,
+        color: '999999',
+    };
+    const borders = {
+        top: tableBorder,
+        bottom: tableBorder,
+        left: tableBorder,
+        right: tableBorder,
+    };
+
+    // Header row
+    const headerRow = new TableRow({
+        tableHeader: true,
+        children: headers.map(h => {
+            const parts = parseInlineBold(h.replace(/\*\*/g, ''));
+            return new TableCell({
+                borders,
+                shading: { fill: 'E6FFFA' },
+                verticalAlign: VerticalAlign.CENTER,
+                children: [
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: parts.map(p => new TextRun({
+                            text: p.text,
+                            bold: true,
+                            size: 21,
+                            color: '0D6B5E',
+                        })),
+                        spacing: { before: 40, after: 40 },
+                    }),
+                ],
+            });
+        }),
+    });
+
+    // Data rows
+    const dataRows = rows.map(row => {
+        // Pad or trim row to match header length
+        const normalizedRow = headers.map((_, idx) => row[idx] || '');
+        return new TableRow({
+            children: normalizedRow.map(cell => {
+                const parts = parseInlineBold(cell);
+                return new TableCell({
+                    borders,
+                    verticalAlign: VerticalAlign.CENTER,
+                    children: [
+                        new Paragraph({
+                            children: parts.map(p => new TextRun({
+                                text: p.text,
+                                bold: p.bold,
+                                size: 21,
+                            })),
+                            spacing: { before: 30, after: 30 },
+                        }),
+                    ],
+                });
+            }),
+        });
+    });
+
+    return new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [headerRow, ...dataRows],
+    });
+}
 
 // ========== HELPERS ==========
 
